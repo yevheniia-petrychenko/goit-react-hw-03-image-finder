@@ -1,12 +1,12 @@
 import './App.css';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { Component } from 'react';
-import axios from 'axios';
 import ImageGallery from './components/ImageGallery/ImageGallery';
 import Modal from './components/Modal/Modal';
 import SearchBar from './components/SearchBar/Searchbar';
 import Button from './components/Button/Button';
 import Loader from 'react-loader-spinner';
+import getImages from './services/Api';
 
 class App extends Component {
   state = {
@@ -49,17 +49,17 @@ class App extends Component {
     }));
   };
 
-  fetchImages = query => {
+  fetchImages = () => {
     const { currentPage, searchQuery } = this.state;
+    const page = currentPage;
+    const q = searchQuery;
+    const options = { q, page };
+
     this.setState(prevState => ({
       currentPage: prevState.currentPage + 1,
       isLoading: true,
     }));
-    axios
-      .get(
-        `https://pixabay.com/api/?key=19936293-f4c012c315df51b179ddeb0ea&q=${searchQuery}&per_page=12&page=${currentPage}`,
-      )
-      .then(response => response.data.hits)
+    getImages(options)
       .then(images => {
         if (images.length > 0) {
           this.setState(prevState => ({
